@@ -1,0 +1,28 @@
+# Run once after Postgres is up: `kubectl apply -f migrate-job.yaml`
+# Check it succeeded with: `kubectl logs job/portfolio-migrate`
+# Then delete it so it doesn't linger: `kubectl delete job portfolio-migrate`
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: portfolio-migrate
+spec:
+  backoffLimit: 2
+  template:
+    spec:
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+      containers:
+        - name: migrate
+          image: YOUR_REGISTRY/portfolio-backend:1.0.0
+          command: ["npm", "run", "migrate"]
+          envFrom:
+            - configMapRef:
+                name: portfolio-backend-config
+            - secretRef:
+                name: portfolio-backend-secret
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]

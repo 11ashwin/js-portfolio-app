@@ -1,0 +1,33 @@
+# Adjust `host` to match your real domain (or minikube's nip.io-style local
+# host if testing locally in-cluster). Matches the NGINX Ingress you already
+# use in the DevSecOps project.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: portfolio-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: portfolio.example.com
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: portfolio-backend
+                port:
+                  number: 3001
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: portfolio-frontend
+                port:
+                  number: 8080
+  tls:
+    - hosts:
+        - portfolio.example.com
+      secretName: portfolio-tls
