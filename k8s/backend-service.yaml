@@ -2,13 +2,15 @@ apiVersion: v1
 kind: Service
 metadata:
   name: portfolio-backend
-  labels:
-    app: portfolio-backend
 spec:
-  type: ClusterIP
+  type: NodePort
+
   selector:
     app: portfolio-backend
+
   ports:
-    - port: 3001
-      targetPort: 3001
+    - name: http
       protocol: TCP
+      port: 3001
+      targetPort: 3001
+      nodePort: 30001
